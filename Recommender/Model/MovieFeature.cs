@@ -23,16 +23,19 @@ public class MovieFeature
     public int MovieId { get; set; }
 
     /// <summary>
-    /// 平均评分
+    /// 总评分
     /// </summary>
-    [Column("averageRating")]
-    public double AverageRating { get; set; }
+    /// <remarks>
+    /// 为了减小误差和便于更新, 记录总评分而非直接记录平均评分
+    /// </remarks>
+    [Column("totalRating")]
+    public double TotalRating { get; set; }
 
     /// <summary>
     /// [1,2)间评分数
     /// </summary>
     /// <remark>
-    /// 为了避免浮点误差和方便更新, 采用int存储, 实际计算相似度采用比值(下同)
+    /// 为了减小误差和方便更新, 采用int存储, 实际计算相似度采用比值(下同)
     /// </remark>
     [Column("ratingCount1")]
     public int RatingCount1 { get; set; }
