@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using EFCore.BulkExtensions;
+using Recommender.FeatureEng;
 using Recommender.Model;
 using System.Formats.Asn1;
 using System.Globalization;
@@ -17,9 +18,8 @@ public class Program
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
 
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-        };
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture);
+
         #region Convert movies.csv to sqlite file
         using var moviesReader = new StreamReader(args[1]);
         using var moviesCsv = new CsvReader(moviesReader, config);
@@ -38,6 +38,48 @@ public class Program
         await context.BulkSaveChangesAsync();
         #endregion
 
-        Console.WriteLine($"End: {DateTime.Now}");
+        Console.WriteLine($"Ratings converted: {DateTime.Now}"); 
+        
+        var featureEngineering = new FeatureEngineering(context);
+
+        #region Feature Engineering for users
+        List<int> users = context.Ratings.Select(e => e.UserId).Distinct().ToList();
+
+        Console.WriteLine($"Start Feature Engineering: {DateTime.Now}");
+
+        for (int i = 0; i < users.Count; i++)
+        {
+            if (i % 1000 == 0)
+            {
+                featureEngineering.GenerateUserFeature(users[i]);
+                Console.WriteLine($"{i}: {DateTime.Now}");
+            }
+            else
+            {
+                featureEngineering.GenerateUserFeature(users[i], false);
+            }
+        }
+        #endregion
+
+        Console.WriteLine($"Users Feature Engineering Finished: {DateTime.Now}");
+
+        #region Feature Engineering for users
+        List<int> movies = context.Movies.Select(e => e.MovieId).ToList();
+
+        for (int i = 0; i < movies.Count; i++)
+        {
+            if (i % 1000 == 0)
+            {
+                featureEngineering.GenerateMovieFeature(movies[i]);
+                Console.WriteLine($"{i}: {DateTime.Now}");
+            }
+            else
+            {
+                featureEngineering.GenerateMovieFeature(movies[i], false);
+            }
+        }
+
+        Console.WriteLine($"Movies Feature Engineering Finished: {DateTime.Now}");
+        #endregion
     }
 }

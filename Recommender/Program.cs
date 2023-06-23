@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using EFCore.BulkExtensions;
 using Recommender.Model;
 using System.Globalization;
+using Recommender.FeatureEng;
 
 namespace Recommender;
 
@@ -13,29 +14,45 @@ public class Program
         Console.WriteLine(DateTime.Now);
 
         var context = new Context("Data Source=model.db");
-        context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
 
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-        };
-        #region Convert movies.csv to sqlite file
-        using var moviesReader = new StreamReader("movies.csv");
-        using var moviesCsv = new CsvReader(moviesReader, config);
-        var moviesRecords = moviesCsv.GetRecords<Movie>();
-        await context.BulkInsertAsync<Movie>(moviesRecords.ToList()); //不使用ToList()会导致无法写入数据库
-        await context.BulkSaveChangesAsync();
-        #endregion
+        var featureEngineering = new FeatureEngineering(context);
+
+        List<int> movies = context.Movies.Select(e => e.MovieId).ToList();
+        List<int> users = context.Ratings.Select(e => e.UserId).Distinct().ToList();
+
+        Console.WriteLine(movies.Count);
+        Console.WriteLine(users.Count);
 
         Console.WriteLine(DateTime.Now);
 
-        #region Convert ratings.csv to sqlite file
-        using var ratingsReader = new StreamReader("ratings.csv");
-        using var ratingsCsv = new CsvReader(ratingsReader, config);
-        var ratingsRecords = ratingsCsv.GetRecords<Rating>();
-        await context.BulkInsertAsync<Rating>(ratingsRecords.ToList()); //不使用ToList()会导致无法写入数据库
-        await context.BulkSaveChangesAsync();
-        #endregion
+        for (int i = 0; i < users.Count; i++)
+        {
+            if (i % 1000 == 0)
+            {
+                featureEngineering.GenerateUserFeature(users[i]);
+                Console.WriteLine($"{i}: {DateTime.Now}");
+            }
+            else
+            {
+                featureEngineering.GenerateUserFeature(users[i], false);
+            }
+        }
+
+        Console.WriteLine(DateTime.Now);
+
+        for (int i = 0; i < movies.Count; i++)
+        {
+            if (i % 1000 == 0)
+            {
+                featureEngineering.GenerateMovieFeature(movies[i]);
+                Console.WriteLine($"{i}: {DateTime.Now}");
+            }
+            else
+            {
+                featureEngineering.GenerateMovieFeature(movies[i], false);
+            }
+        }
 
         Console.WriteLine(DateTime.Now);
     }

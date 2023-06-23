@@ -2,7 +2,7 @@
   "profiles": {
     "DataConverter": {
       "commandName": "Project",
-      "commandLineArgs": "model.db\r\n\"F:\\BearRecommender\\ml-20m\\movies.csv\"\r\n\"F:\\BearRecommender\\ml-20m\\ratings.csv\""
+      "commandLineArgs": "\"F:\\BearRecommender\\ml-20m\\dealed\\model.db\"\r\n\"F:\\BearRecommender\\ml-20m\\dealed\\movies.csv\"\r\n\"F:\\BearRecommender\\ml-20m\\dealed\\train.csv\""
     }
   }
 }

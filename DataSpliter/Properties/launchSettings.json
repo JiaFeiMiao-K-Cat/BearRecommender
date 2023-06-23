@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DataSpliter": {
+      "commandName": "Project",
+      "commandLineArgs": "10000\r\n\"F:\\BearRecommender\\ml-20m\\ratings.csv\"\r\n\"F:\\BearRecommender\\ml-20m\\dealed\\train.csv\"\r\n\"F:\\BearRecommender\\ml-20m\\dealed\\test.csv\""
+    }
+  }
+}
