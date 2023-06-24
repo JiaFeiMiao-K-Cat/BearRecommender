@@ -20,7 +20,7 @@ public class FeatureEngineering
 
     public void GenerateMovieFeature(int movieId, bool saveChanges = true)
     {
-        var feature = _context.MoviesFeatures.FirstOrDefault(e => e.MovieId == movieId);
+        var feature = _context.MovieFeatures.FirstOrDefault(e => e.MovieId == movieId);
         if (feature != null)
         {
             return;
@@ -30,13 +30,15 @@ public class FeatureEngineering
             feature = new MovieFeature();
             feature.MovieId = movieId;
             var ratings = _context.Ratings.Where(e => e.MovieId == movieId).ToList();
-            var ratingCount = ratings.GroupBy(e => Math.Floor(e.UserRating)).Select(p => new { Key = p.Key, Value = p.Count() });
+            feature.TotalRating = ratings.Sum(e => e.UserRating);
+            var ratingCount = ratings.GroupBy(e => Math.Ceiling(e.UserRating)).Select(p => new { Key = p.Key, Value = p.Count() });
             feature.RatingCount1 = ratingCount.FirstOrDefault(e => e.Key == 1)?.Value ?? 0;
             feature.RatingCount2 = ratingCount.FirstOrDefault(e => e.Key == 2)?.Value ?? 0;
             feature.RatingCount3 = ratingCount.FirstOrDefault(e => e.Key == 3)?.Value ?? 0;
-            feature.RatingCount4 = ratingCount.FirstOrDefault(e => e.Key == 4)?.Value ?? 0 + ratingCount.FirstOrDefault(e => e.Key == 5)?.Value ?? 0;
+            feature.RatingCount4 = ratingCount.FirstOrDefault(e => e.Key == 4)?.Value ?? 0;
+            feature.RatingCount5 = ratingCount.FirstOrDefault(e => e.Key == 5)?.Value ?? 0;
             feature.Genres = MultiEncoding.GetMultiEncoding(_context.Movies.First(e => e.MovieId == movieId).Genres);
-            _context.MoviesFeatures.Add(feature);
+            _context.MovieFeatures.Add(feature);
             if (saveChanges)
             {
                 _context.SaveChanges();
@@ -80,13 +82,20 @@ public class FeatureEngineering
         {
             feature = new UserFeature();
             feature.UserId = userId;
-            var ratings = _context.Ratings.Where(e => e.UserId == userId).ToList();
-            var ratingCount = ratings.GroupBy(e => Math.Floor(e.UserRating)).Select(p => new { Key = p.Key, Value = p.Count() });
+            var ratings = _context.Ratings.Where(e => e.UserId == userId);
+            feature.TotalRating = ratings.Sum(e => e.UserRating);
+            var ratingCount = ratings.ToList().GroupBy(e => Math.Ceiling(e.UserRating)).Select(p => new { Key = p.Key, Value = p.Count() });
             feature.RatingCount1 = ratingCount.FirstOrDefault(e => e.Key == 1)?.Value ?? 0;
             feature.RatingCount2 = ratingCount.FirstOrDefault(e => e.Key == 2)?.Value ?? 0;
             feature.RatingCount3 = ratingCount.FirstOrDefault(e => e.Key == 3)?.Value ?? 0;
-            feature.RatingCount4 = ratingCount.FirstOrDefault(e => e.Key == 4)?.Value ?? 0 + ratingCount.FirstOrDefault(e => e.Key == 5)?.Value ?? 0;
+            feature.RatingCount4 = ratingCount.FirstOrDefault(e => e.Key == 4)?.Value ?? 0;
+            feature.RatingCount5 = ratingCount.FirstOrDefault(e => e.Key == 5)?.Value ?? 0;
             feature.Perfer = FindUserPerfer(userId);
+            feature.MovieIds = ratings
+                .Where(e => e.UserRating > 3.5)
+                .OrderBy(e => e.Timestamp)
+                .Select(e => e.MovieId)
+                .ToList();
             _context.UserFeatures.Add(feature);
             if (saveChanges)
             {

@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataConverter", "..\DataCon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSpliter", "..\DataSpliter\DataSpliter.csproj", "{67828625-7F27-47F3-98CE-4ED29EA97A47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRemmender", "..\TestRemmender\TestRemmender.csproj", "{8301D5EB-E30B-4CC5-BC6E-CD353C9F9502}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{67828625-7F27-47F3-98CE-4ED29EA97A47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67828625-7F27-47F3-98CE-4ED29EA97A47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67828625-7F27-47F3-98CE-4ED29EA97A47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8301D5EB-E30B-4CC5-BC6E-CD353C9F9502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8301D5EB-E30B-4CC5-BC6E-CD353C9F9502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8301D5EB-E30B-4CC5-BC6E-CD353C9F9502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8301D5EB-E30B-4CC5-BC6E-CD353C9F9502}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

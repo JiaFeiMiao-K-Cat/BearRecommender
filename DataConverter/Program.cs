@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using Recommender.FeatureEng;
 using Recommender.Model;
 using System.Formats.Asn1;
@@ -59,11 +60,26 @@ public class Program
                 featureEngineering.GenerateUserFeature(users[i], false);
             }
         }
+        context.SaveChanges();
+        Console.WriteLine(DateTime.Now);
+        var userFeatures = context.UserFeatures.ToList();
+
+        if (!Embedding.LoadModel())
+        {
+            Embedding.BuildAndTrainModel(userFeatures);
+        }
+
+        Embedding.UseModelForMultiPrediction(userFeatures);
+        foreach (var user in userFeatures)
+        {
+            context.UserFeatures.Update(user);
+        }
+        context.SaveChanges();
         #endregion
 
         Console.WriteLine($"Users Feature Engineering Finished: {DateTime.Now}");
 
-        #region Feature Engineering for users
+        /*#region Feature Engineering for movies
         List<int> movies = context.Movies.Select(e => e.MovieId).ToList();
 
         for (int i = 0; i < movies.Count; i++)
@@ -80,6 +96,6 @@ public class Program
         }
 
         Console.WriteLine($"Movies Feature Engineering Finished: {DateTime.Now}");
-        #endregion
+        #endregion*/
     }
 }

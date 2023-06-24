@@ -35,7 +35,7 @@ public class Rating
     /// 避免命名冲突, 重命名为UserRating
     /// </remarks>
     [Column("rating"), Name("rating"), LoadColumn(2)]
-    public double UserRating { get; set; }
+    public float UserRating { get; set; }
 
     /// <summary>
     /// 评分操作的时间戳

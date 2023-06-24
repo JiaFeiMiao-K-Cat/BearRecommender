@@ -33,7 +33,7 @@ public static class MultiEncoding
             {"War",                 18},
             {"Western",             19},
         };
-    public static BitArray GetBits(long coding)
+    private static BitArray GetBits(long coding)
     {
         return new BitArray(BitConverter.GetBytes(coding));
     }
