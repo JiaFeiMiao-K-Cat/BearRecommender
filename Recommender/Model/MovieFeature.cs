@@ -115,7 +115,7 @@ public class MovieFeature
         square += Math.Pow(RatingRate2, 2);
         square += Math.Pow(RatingRate3, 2);
         square += Math.Pow(RatingRate4, 2);
-        square += Math.Pow(MultiEncoding.Count(Genres), 2);
+        square += MultiEncoding.Count(Genres);
         return square;
     }
 }
