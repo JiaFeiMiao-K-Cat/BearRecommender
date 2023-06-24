@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Recommender.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,5 +75,25 @@ public class Context : DbContext
             #endregion
             SaveChanges();
         }
+    }
+    public void AddNewUser(UserFeature user)
+    {
+        if (UserFeatures.Any(e => e.UserId == user.UserId))
+        {
+            return;
+        }
+        else
+        {
+            var userFeature = UserFeatures.Add(user);
+            SaveChanges();
+        }
+    }
+    public int AddNewUser(string perfer)
+    {
+        UserFeature user = new UserFeature();
+        user.Perfer = MultiHotEncoding.GetMultiEncoding(perfer);
+        UserFeatures.Add(user);
+        SaveChanges();
+        return user.UserId;
     }
 }
