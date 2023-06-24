@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Recommender.Model.Tests;
 
 [TestClass()]
-public class UnitTestMovieFeature
+public class MovieFeatureTests
 {
     [TestMethod()]
     public void SquareSumTest()
