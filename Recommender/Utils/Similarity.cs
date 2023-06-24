@@ -20,7 +20,7 @@ public class Similarity
         multiply += itemA.RatingRate3 * itemB.RatingRate3;
         multiply += itemA.RatingRate4 * itemB.RatingRate4;
         multiply += itemA.RatingRate5 * itemB.RatingRate5;
-        multiply += MultiEncoding.Multiply(itemA.Genres, itemB.Genres);
+        multiply += MultiHotEncoding.Multiply(itemA.Genres, itemB.Genres);
         return multiply / (Math.Sqrt(squareA) * Math.Sqrt(squareB) + 1e-18);
         // 防止除零, 分母加1e-18
     }
@@ -35,7 +35,7 @@ public class Similarity
         multiply += userA.RatingRate3 * userB.RatingRate3;
         multiply += userA.RatingRate4 * userB.RatingRate4;
         multiply += userA.RatingRate5 * userB.RatingRate5;
-        multiply += MultiEncoding.Multiply(userA.Perfer, userB.Perfer);
+        multiply += MultiHotEncoding.Multiply(userA.Perfer, userB.Perfer);
         return multiply / (Math.Sqrt(squareA) * Math.Sqrt(squareB) + 1e-18);
         // 防止除零, 分母加1e-18
     }
@@ -54,7 +54,7 @@ public class Similarity
         cov += (userA.RatingRate4 - avgA) * (userB.RatingRate4 - avgB);
         cov += (userA.RatingRate5 - avgA) * (userB.RatingRate5 - avgB);
 
-        cov /= 6;
+        cov /= 5;
 
         return cov;
     }
@@ -84,6 +84,6 @@ public class Similarity
 
     public static double UserCosine(UserFeature userA, UserFeature userB)
     {
-        return 0.1 * UserFeaturePearson(userA, userB) + 0.5 * UserFeatureCosine(userA, userB) + 0.4 * EmbeddingUserCosine(userA, userB);
+        return 0.1 * UserFeaturePearson(userA, userB) + 0.45 * UserFeatureCosine(userA, userB) + 0.45 * EmbeddingUserCosine(userA, userB);
     }
 }

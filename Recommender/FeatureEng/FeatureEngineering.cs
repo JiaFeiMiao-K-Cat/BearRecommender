@@ -37,7 +37,7 @@ public class FeatureEngineering
             feature.RatingCount3 = ratingCount.FirstOrDefault(e => e.Key == 3)?.Value ?? 0;
             feature.RatingCount4 = ratingCount.FirstOrDefault(e => e.Key == 4)?.Value ?? 0;
             feature.RatingCount5 = ratingCount.FirstOrDefault(e => e.Key == 5)?.Value ?? 0;
-            feature.Genres = MultiEncoding.GetMultiEncoding(_context.Movies.First(e => e.MovieId == movieId).Genres);
+            feature.Genres = MultiHotEncoding.GetMultiEncoding(_context.Movies.First(e => e.MovieId == movieId).Genres);
             _context.MovieFeatures.Add(feature);
             if (saveChanges)
             {
@@ -46,7 +46,7 @@ public class FeatureEngineering
         }
     }
 
-    public long FindUserPerfer(int userId)
+    public ulong FindUserPerfer(int userId)
     {
         Dictionary<string, int> dict = new Dictionary<string, int>();
         var ratings = _context.Ratings.Where(e => e.UserId == userId).ToList();
@@ -68,7 +68,7 @@ public class FeatureEngineering
                 }
             }
         }
-        return MultiEncoding.GetPerferCoding(dict);
+        return MultiHotEncoding.GetPerferCoding(dict);
     }
 
     public void GenerateUserFeature(int userId, bool saveChanges = true)

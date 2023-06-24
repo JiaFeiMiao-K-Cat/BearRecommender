@@ -36,7 +36,7 @@ public class Rank
             movieFeatures.Add(_context.MovieFeatures.FirstOrDefault(e => e.MovieId == movie));
         }
         var movieIds = movieFeatures.OrderByDescending(e => e.AverageRating)
-            .ThenByDescending(e => MultiEncoding.Multiply(e.Genres, user!.Perfer))
+            .ThenByDescending(e => MultiHotEncoding.Multiply(e.Genres, user!.Perfer))
             .ThenByDescending(e => _filter.PredictUserRating(userId, e.MovieId))
             .Take(k)
             .Select(e => e.MovieId);

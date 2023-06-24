@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Recommender.Utils;
 
-public static class MultiEncoding
+public static class MultiHotEncoding
 {
     private static readonly Dictionary<string, int> _encodingMap 
         = new Dictionary<string, int>()
@@ -33,75 +33,75 @@ public static class MultiEncoding
             {"War",                 18},
             {"Western",             19},
         };
-    private static BitArray GetBits(long coding)
+    private static BitArray GetBits(ulong coding)
     {
         return new BitArray(BitConverter.GetBytes(coding));
     }
 
-    public static long GetMultiEncoding(string genres)
+    public static ulong GetMultiEncoding(string genres)
     {
-        long coding = 0;
+        ulong coding = 0;
         string[] strings = genres.Split('|');
         foreach (string s in strings)
         {
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                continue;
+            }
             if (_encodingMap.ContainsKey(s))
             {
-                coding |= 1L << _encodingMap[s];
+                coding |= 1LU << _encodingMap[s];
             }
             else
             {
-                coding |= 1L << 63;
+                coding |= 1LU << 63;
                 // 未列出的项目置最高位, 为后期添加分类预留空间
             }
         }
         return coding;
     }
 
-    public static List<string> GetGenres(long coding)
+    public static List<string> GetGenres(ulong coding)
     {
         var genres = new List<string>();
         BitArray bits = GetBits(coding);
-        for (int i = 0; i < bits.Length; i++)
+        int max = _encodingMap.MaxBy(e => e.Value).Value;
+        // 超过最大值显然无法对应, 无需处理
+        for (int i = 0; i <= max; i++)
         {
             if (bits[i])
             {
-                var genre = _encodingMap.FirstOrDefault(e => e.Value == i);
-                if (genre.Equals(default))
-                {
-                    continue;
-                }
-                else
-                {
-                    genres.Add(genre.Key);
-                }                
+                var genre = _encodingMap.First(e => e.Value == i);
+                // 必定有对应键值对, 直接添加即可
+                genres.Add(genre.Key);          
             }
         }
         return genres;
     }
 
-    public static long GetPerferCoding(Dictionary<string, int> count)
+    public static ulong GetPerferCoding(Dictionary<string, int> count)
     {
         var perferStrings = count.OrderByDescending(e => e.Value)
-            .ThenByDescending(e => e.Key)
+            .ThenBy(e => e.Key)
             .Select(e => e.Key)
             .Take(5)
             .ToList();
-        long coding = 0;
+        ulong coding = 0;
         foreach (var perfer in perferStrings)
         {
             if (_encodingMap.ContainsKey(perfer))
             {
-                coding |= 1L << _encodingMap[perfer];
+                coding |= 1LU << _encodingMap[perfer];
             }
             else
             {
-                coding |= 1L << 64;
+                coding |= 1LU << 63;
             }
         }
         return coding;
     }
 
-    public static int Count(long coding)
+    public static int Count(ulong coding)
     {
         int count = 0;
         BitArray bits = GetBits(coding);
@@ -115,9 +115,9 @@ public static class MultiEncoding
         return count;
     }
 
-    public static int Multiply(long coding1, long coding2)
+    public static int Multiply(ulong coding1, ulong coding2)
     {
-        long newCoding = coding1 & coding2;
+        ulong newCoding = coding1 & coding2;
         // 按位与保留共同属性
         return Count(newCoding);
     }

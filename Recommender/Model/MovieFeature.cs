@@ -117,7 +117,7 @@ public class MovieFeature
     /// 目前只用19位,为方便后期扩充用long类型
     /// </remarks>
     [Column("genres")]
-    public long Genres { get; set; }
+    public ulong Genres { get; set; }
 
     public double SquareSum()
     {
@@ -128,7 +128,7 @@ public class MovieFeature
         square += Math.Pow(RatingRate3, 2);
         square += Math.Pow(RatingRate4, 2);
         square += Math.Pow(RatingRate5, 2);
-        square += MultiEncoding.Count(Genres);
+        square += MultiHotEncoding.Count(Genres);
         return square;
     }
 }

@@ -109,9 +109,18 @@ public class UserFeature
     [NotMapped]
     public double RatingRate5 { get { return RatingCount5 / (TotalRatingCount + 1e-18); } }
 
+    /// <summary>
+    /// 观看过且评分大于3.5的电影编号列表
+    /// </summary>
     [NotMapped]
     public List<int> MovieIds { get; set; } = new List<int>();
 
+    /// <summary>
+    /// MovieIds的字符串映射
+    /// </summary>
+    /// <remarks>
+    /// 分隔符是空格, 方便后续Embedding操作
+    /// </remarks>
     [Column("movieIds")]
     public string MovieIdsString
     {
@@ -119,16 +128,21 @@ public class UserFeature
         set => MovieIds = value == null ? new List<int>() : value.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList().ConvertAll(int.Parse);
     }
 
+    /// <summary>
+    /// Embedding得到的特征向量
+    /// </summary>
+    [NotMapped]
+    public float[] FeaturesEncoded { get; set; }
+
+    /// <summary>
+    /// 特征的字符串映射
+    /// </summary>
     [Column("featuresEncoded")]
     public string FeaturesEncodedString
     {
         get => string.Join(",", FeaturesEncoded ?? Array.Empty<float>());
-
         set => FeaturesEncoded = value == null ? Array.Empty<float>() : Array.ConvertAll(value.Split(',', StringSplitOptions.RemoveEmptyEntries), float.Parse);
     }
-
-    [NotMapped]
-    public float[] FeaturesEncoded { get; set; }
 
     /// <summary>
     /// 电影偏好, 多热编码, 最多五项, 分类定义与电影分类一致
@@ -137,7 +151,7 @@ public class UserFeature
     /// 为了保证位数一致方便运算, 使用long存储
     /// </remarks>
     [Column("perfer")]
-    public long Perfer { get; set; }
+    public ulong Perfer { get; set; }
 
     /// <summary>
     /// 上次计算偏好后的新增记录数
@@ -157,7 +171,7 @@ public class UserFeature
         square += Math.Pow(RatingRate3, 2);
         square += Math.Pow(RatingRate4, 2);
         square += Math.Pow(RatingRate5, 2);
-        square += MultiEncoding.Count(Perfer);
+        square += MultiHotEncoding.Count(Perfer);
         return square;
     }
 
