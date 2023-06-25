@@ -83,7 +83,7 @@ public class Program
                     $"precision={(tp) / (tp + fp)}, recall={(tp) / (tp + fn)}, f1={(2 * tp) / (2 * tp + fp + fn)}");
             }
         }
-        mae /= records.Count();
+        mae /= count;
         Console.WriteLine(DateTime.Now);
         Console.WriteLine($"mae={mae}, accuracy={(tp + tn) / (tp + tn + fp + fn)}, precision={(tp) / (tp + fp)}, " +
             $"recall={(tp) / (tp + fn)}, f1={(2 * tp) / (2 * tp + fp + fn)}");
