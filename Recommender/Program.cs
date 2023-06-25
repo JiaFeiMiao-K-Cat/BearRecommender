@@ -70,7 +70,6 @@ public class Program
                     tn++;
                 }
             }
-            //Console.WriteLine($"{record.UserId} {record.MovieId}: {record.UserRating} -- {predict}");
             mae += Math.Abs(predict - record.UserRating);
             count++;
             if (double.IsNaN(mae))
@@ -78,13 +77,10 @@ public class Program
                 Console.WriteLine($"{count}: {mae} {predict} {movieRatingPrediction}");
                 return;
             }
-            //Console.WriteLine($"{count}: {mae / count} at {DateTime.Now}");
-            //Console.WriteLine($"{count}: accuracy={(tp + tn) / (tp + tn + fp + fn)}, precision={(tp) / (tp + fp)}, recall={(tp) / (tp + fn)}, f1={(2 * tp) / (2 * tp + fp + fn)}");
             if (count % 1000 == 0)
             {
                 Console.WriteLine($"{count} at {DateTime.Now}: mae={mae / count}, accuracy={(tp + tn) / (tp + tn + fp + fn)}, " +
                     $"precision={(tp) / (tp + fp)}, recall={(tp) / (tp + fn)}, f1={(2 * tp) / (2 * tp + fp + fn)}");
-                //break;
             }
         }
         mae /= records.Count();
