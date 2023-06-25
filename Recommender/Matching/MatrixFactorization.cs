@@ -17,6 +17,11 @@ public static class MatrixFactorization
     static DataViewSchema schema;
 
     static ITransformer model; 
+
+    /// <summary>
+    /// 加载本地模型
+    /// </summary>
+    /// <returns>是否存在本地模型</returns>
     public static bool LoadModel()
     {
         if (File.Exists("MovieRecommenderModel.zip"))
@@ -29,11 +34,17 @@ public static class MatrixFactorization
             return false;
         }
     }
+
+    /// <summary>
+    /// 创建并训练模型
+    /// </summary>
+    /// <param name="trainingData">训练集</param>
     public static void BuildAndTrainModel(IEnumerable<Rating> trainingData)
     {
         IDataView trainingDataView = mlContext.Data.LoadFromEnumerable(trainingData);
 
-        IEstimator<ITransformer> estimator = mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "userIdEncoded", inputColumnName: "UserId")
+        IEstimator<ITransformer> estimator = mlContext.Transforms.Conversion
+            .MapValueToKey(outputColumnName: "userIdEncoded", inputColumnName: "UserId")
             .Append(mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "movieIdEncoded", inputColumnName: "MovieId"));
 
         // Set algorithm options and append algorithm
@@ -51,6 +62,11 @@ public static class MatrixFactorization
         Console.WriteLine("=============== Training the model ===============");
         model = trainerEstimator.Fit(trainingDataView);
     }
+
+    /// <summary>
+    /// 评估模型
+    /// </summary>
+    /// <param name="testData">测试集</param>
     public static void EvaluateModel(IEnumerable<Rating> testData)
     {
         IDataView testDataView = mlContext.Data.LoadFromEnumerable(testData);
@@ -63,6 +79,12 @@ public static class MatrixFactorization
         Console.WriteLine("Root Mean Squared Error : " + metrics.RootMeanSquaredError.ToString());
         Console.WriteLine("RSquared: " + metrics.RSquared.ToString());
     }
+
+    /// <summary>
+    /// 预测单个评分的分数
+    /// </summary>
+    /// <param name="rating">评分数据</param>
+    /// <returns>预测评分, 无法预测会返回Nan</returns>
     public static float UseModelForSinglePrediction(Rating rating)
     {
         var predictionEngine = mlContext.Model.CreatePredictionEngine<Rating, MovieRatingPrediction>(model);
@@ -71,6 +93,10 @@ public static class MatrixFactorization
 
         return movieRatingPrediction.Score;
     }
+
+    /// <summary>
+    /// 保存模型到本地
+    /// </summary>
     public static void SaveModel()
     {
         Console.WriteLine("=============== Saving the model to a file ===============");

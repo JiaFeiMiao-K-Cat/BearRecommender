@@ -119,6 +119,10 @@ public class MovieFeature
     [Column("genres")]
     public ulong Genres { get; set; }
 
+    /// <summary>
+    /// 计算平方和
+    /// </summary>
+    /// <returns>平方和</returns>
     public double SquareSum()
     {
         double square = 0;

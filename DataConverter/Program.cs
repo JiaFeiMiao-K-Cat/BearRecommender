@@ -79,7 +79,7 @@ public class Program
 
         Console.WriteLine($"Users Feature Engineering Finished: {DateTime.Now}");
 
-        /*#region Feature Engineering for movies
+        #region Feature Engineering for movies
         List<int> movies = context.Movies.Select(e => e.MovieId).ToList();
 
         for (int i = 0; i < movies.Count; i++)
@@ -96,6 +96,6 @@ public class Program
         }
 
         Console.WriteLine($"Movies Feature Engineering Finished: {DateTime.Now}");
-        #endregion*/
+        #endregion
     }
 }

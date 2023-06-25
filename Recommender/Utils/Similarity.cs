@@ -9,21 +9,34 @@ namespace Recommender.Utils;
 
 public class Similarity
 {
-    public static double MovieFeatureCosine(MovieFeature itemA, MovieFeature itemB)
+    /// <summary>
+    /// 电影特征的余弦相似度
+    /// </summary>
+    /// <param name="movieA">电影A</param>
+    /// <param name="movieB">电影B</param>
+    /// <returns>余弦相似度</returns>
+    public static double MovieFeatureCosine(MovieFeature movieA, MovieFeature movieB)
     {
-        double squareA = itemA.SquareSum();
-        double squareB = itemB.SquareSum();
+        double squareA = movieA.SquareSum();
+        double squareB = movieB.SquareSum();
         double multiply = 0;
-        multiply += itemA.AverageRating * itemB.AverageRating;
-        multiply += itemA.RatingRate1 * itemB.RatingRate1;
-        multiply += itemA.RatingRate2 * itemB.RatingRate2;
-        multiply += itemA.RatingRate3 * itemB.RatingRate3;
-        multiply += itemA.RatingRate4 * itemB.RatingRate4;
-        multiply += itemA.RatingRate5 * itemB.RatingRate5;
-        multiply += MultiHotEncoding.Multiply(itemA.Genres, itemB.Genres);
+        multiply += movieA.AverageRating * movieB.AverageRating;
+        multiply += movieA.RatingRate1 * movieB.RatingRate1;
+        multiply += movieA.RatingRate2 * movieB.RatingRate2;
+        multiply += movieA.RatingRate3 * movieB.RatingRate3;
+        multiply += movieA.RatingRate4 * movieB.RatingRate4;
+        multiply += movieA.RatingRate5 * movieB.RatingRate5;
+        multiply += MultiHotEncoding.Multiply(movieA.Genres, movieB.Genres);
         return multiply / (Math.Sqrt(squareA) * Math.Sqrt(squareB) + 1e-18);
         // 防止除零, 分母加1e-18
     }
+
+    /// <summary>
+    /// 用户特征的余弦相似度
+    /// </summary>
+    /// <param name="userA">用户A</param>
+    /// <param name="userB">用户B</param>
+    /// <returns>余弦相似度</returns>
     public static double UserFeatureCosine(UserFeature userA, UserFeature userB)
     {
         double squareA = userA.SquareSum();
@@ -58,6 +71,13 @@ public class Similarity
 
         return cov;
     }
+
+    /// <summary>
+    /// 用户特征的皮尔逊相似度
+    /// </summary>
+    /// <param name="userA">用户A</param>
+    /// <param name="userB">用户B</param>
+    /// <returns>皮尔逊相似度</returns>
     public static double UserFeaturePearson(UserFeature userA, UserFeature userB)
     {
         double cov = Covariance(userA, userB);
@@ -67,6 +87,13 @@ public class Similarity
 
         return cov / (Math.Sqrt(varA) * Math.Sqrt(varB) + 1e-18);
     }
+
+    /// <summary>
+    /// 用户Embedding特征的余弦相似度
+    /// </summary>
+    /// <param name="userA">用户A</param>
+    /// <param name="userB">用户B</param>
+    /// <returns>余弦相似度</returns>
     public static double EmbeddingUserCosine(UserFeature userA, UserFeature userB)
     {
         double numerator = 0;
@@ -82,7 +109,13 @@ public class Similarity
         return numerator / (Math.Sqrt(denominatorA) * Math.Sqrt(denominatorB) + 1e-18);
     }
 
-    public static double UserCosine(UserFeature userA, UserFeature userB)
+    /// <summary>
+    /// 加权的用户相似度
+    /// </summary>
+    /// <param name="userA">用户A</param>
+    /// <param name="userB">用户B</param>
+    /// <returns>用户相似度</returns>
+    public static double UserSimilarity(UserFeature userA, UserFeature userB)
     {
         return 0.1 * UserFeaturePearson(userA, userB) + 0.45 * UserFeatureCosine(userA, userB) + 0.45 * EmbeddingUserCosine(userA, userB);
     }

@@ -132,7 +132,7 @@ public class UserFeature
     /// Embedding得到的特征向量
     /// </summary>
     [NotMapped]
-    public float[] FeaturesEncoded { get; set; }
+    public float[] FeaturesEncoded { get; set; } = new float[300];
 
     /// <summary>
     /// 特征的字符串映射
@@ -162,6 +162,10 @@ public class UserFeature
     [Column("newRecordsCount")]
     public int NewRecordsCount { get; set; }
 
+    /// <summary>
+    /// 计算平方和
+    /// </summary>
+    /// <returns>平方和</returns>
     public double SquareSum()
     {
         double square = 0;
@@ -172,21 +176,31 @@ public class UserFeature
         square += Math.Pow(RatingRate4, 2);
         square += Math.Pow(RatingRate5, 2);
         square += MultiHotEncoding.Count(Perfer);
+        // 多热编码当成向量处理, 因此平方和等于1的个数
         return square;
     }
 
+    /// <summary>
+    /// 计算平均数
+    /// </summary>
+    /// <returns>平均数</returns>
     public double Average()
     {
         double avg = AverageRating / 5 + RatingRate1 + RatingRate2 + RatingRate3 + RatingRate4 + RatingRate5;
+        // 对平均给分进行归一化
         avg /= 6;
         return avg;
     }
 
+    /// <summary>
+    /// 计算方差
+    /// </summary>
+    /// <returns>方差</returns>
     public double Variance()
     {
         double var = 0;
         double avg = Average();
-        var += Math.Pow(AverageRating / 5 - avg, 2);
+        var += Math.Pow(AverageRating / 5 - avg, 2); // 对平均给分进行归一化
         var += Math.Pow(RatingRate1 - avg, 2);
         var += Math.Pow(RatingRate2 - avg, 2);
         var += Math.Pow(RatingRate3 - avg, 2);

@@ -27,16 +27,23 @@ public class Context : DbContext
         optionsBuilder.UseSqlite(_connectionString);
     }
 
+    /// <summary>
+    /// 增加评分记录
+    /// </summary>
+    /// <param name="rating">评分记录</param>
     public void AddRating(Rating rating)
     {
-        if (Ratings.Any(e => e.UserId == rating.UserId && e.MovieId == rating.MovieId && e.Timestamp == rating.Timestamp))
+        if (Ratings.Any(e => e.UserId == rating.UserId 
+                && e.MovieId == rating.MovieId 
+                && e.Timestamp == rating.Timestamp))
         {
             return;
-        }
+        } // 已存在, 不更新评分
         else
         {
             Ratings.Add(rating);
-            #region update UserFeature;
+
+            #region update UserFeature
             var userFeature = UserFeatures.FirstOrDefault(e => e.UserId == rating.UserId);
             if (userFeature == null)
             {
@@ -45,7 +52,6 @@ public class Context : DbContext
                 UserFeatures.Add(userFeature);
             }
             userFeature.TotalRating += rating.UserRating;
-            userFeature.NewRecordsCount++;
             switch ((int)double.Ceiling(rating.UserRating)) 
             {
                 case 1: { userFeature.RatingCount1++; break; }
@@ -54,6 +60,11 @@ public class Context : DbContext
                 case 4: { userFeature.RatingCount4++; break; }
                 case 5: { userFeature.RatingCount5++; break; }
             }
+            if (rating.UserRating >= 3.5)
+            {
+                userFeature.MovieIds.Add(rating.MovieId); // 更新高分电影列表, 已经按时间升序了, 所以直接添加即可
+            }
+            userFeature.NewRecordsCount++; // 更新计数器, 重新计算Embedding留到离线处理进行, 提高在线服务性能
             UserFeatures.Update(userFeature);
             #endregion
 
@@ -76,18 +87,12 @@ public class Context : DbContext
             SaveChanges();
         }
     }
-    public void AddNewUser(UserFeature user)
-    {
-        if (UserFeatures.Any(e => e.UserId == user.UserId))
-        {
-            return;
-        }
-        else
-        {
-            var userFeature = UserFeatures.Add(user);
-            SaveChanges();
-        }
-    }
+
+    /// <summary>
+    /// 新增用户
+    /// </summary>
+    /// <param name="perfer">用户偏好</param>
+    /// <returns>用户ID</returns>
     public int AddNewUser(string perfer)
     {
         UserFeature user = new UserFeature();

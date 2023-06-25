@@ -38,6 +38,11 @@ public static class MultiHotEncoding
         return new BitArray(BitConverter.GetBytes(coding));
     }
 
+    /// <summary>
+    /// 获取分类集对应的多热编码
+    /// </summary>
+    /// <param name="genres">分类集</param>
+    /// <returns>多热编码</returns>
     public static ulong GetMultiEncoding(string genres)
     {
         ulong coding = 0;
@@ -61,6 +66,11 @@ public static class MultiHotEncoding
         return coding;
     }
 
+    /// <summary>
+    /// 获取分类集
+    /// </summary>
+    /// <param name="coding">多热编码</param>
+    /// <returns>分类列表</returns>
     public static List<string> GetGenres(ulong coding)
     {
         var genres = new List<string>();
@@ -79,6 +89,11 @@ public static class MultiHotEncoding
         return genres;
     }
 
+    /// <summary>
+    /// 获取用户偏好(最多五项)的多热编码
+    /// </summary>
+    /// <param name="count">用户观看过的电影分类统计</param>
+    /// <returns>用户偏好</returns>
     public static ulong GetPerferCoding(Dictionary<string, int> count)
     {
         var perferStrings = count.OrderByDescending(e => e.Value)
@@ -101,6 +116,11 @@ public static class MultiHotEncoding
         return coding;
     }
 
+    /// <summary>
+    /// 计算多热编码中1的个数
+    /// </summary>
+    /// <param name="coding">多热编码</param>
+    /// <returns>1的个数</returns>
     public static int Count(ulong coding)
     {
         int count = 0;
@@ -115,6 +135,12 @@ public static class MultiHotEncoding
         return count;
     }
 
+    /// <summary>
+    /// 计算两个多热编码的乘积, 即共同的1的个数
+    /// </summary>
+    /// <param name="coding1">编码1</param>
+    /// <param name="coding2">编码2</param>
+    /// <returns>乘积</returns>
     public static int Multiply(ulong coding1, ulong coding2)
     {
         ulong newCoding = coding1 & coding2;
