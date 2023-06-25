@@ -8,3 +8,10 @@
 /DataSpliter/obj
 /TestRemmender/bin
 /TestRemmender/obj
+/WebServer/bin
+/WebServer/obj
+/WebServer/model.db
+/WebServer/model.db-shm
+/WebServer/model.db-wal
+/WebServer/MovieRecommenderModel.zip
+/WebServer/WordEmbedding.zip
